@@ -3,9 +3,9 @@ import { v } from "convex/values";
 
 // Mutation to create a new session
 export const createSession = mutation({
-    args: { sessionTitle: v.string(), sessionPassword: v.string(), sessionType: v.string() },
+    args: { sessionTitle: v.string(), sessionPassword: v.string(), sessionType: v.string()  , imageArray: v.array(v.id("_storage"))},
     handler: async (ctx, args) => {
-      const sessionId = await ctx.db.insert("sessions", { sessionTitle: args.sessionTitle, sessionPassword: args.sessionPassword, sessionType: args.sessionType });
+      const sessionId = await ctx.db.insert("sessions", { sessionTitle: args.sessionTitle, sessionPassword: args.sessionPassword, sessionType: args.sessionType , imageArray: args.imageArray});
       return { sessionId };
     },
   });
@@ -34,10 +34,13 @@ export const fetchSessions = query({
     });
 // Query to fetch a session by sessionId
 export const fetchSession = query({
-    args: { id: v.id("sessions") },
+    args: { _id: v.id("sessions") },
     handler: async (ctx, args) => {
-      const session = await ctx.db.get(args.id);
+      const session = await ctx.db.get(args._id);
       return { session };
     },
+    });
+export const generateUploadUrl = mutation(async (ctx) => {
+      return await ctx.storage.generateUploadUrl();
     });
 
